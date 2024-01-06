@@ -46,6 +46,8 @@
 #include <regex>
 #include "ExceptionHandler.h"
 
+#include "D:\media_encrypt\media_encrypt\media_encrypt.h"
+
 #define HOOKS_BUGS_URL _T("https://trac.mpc-hc.org/ticket/3739")
 
 HICON LoadIcon(CString fn, bool bSmallIcon, DpiHelper* pDpiHelper/* = nullptr*/)
@@ -1366,6 +1368,8 @@ HANDLE WINAPI Mine_CreateFileA(LPCSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIBU
 {
     p3 |= FILE_SHARE_WRITE;
 
+    //MessageBoxA(0, p1, "A", 0);
+
     return Real_CreateFileA(p1, p2, p3, p4, p5, p6, p7);
 }
 
@@ -1412,6 +1416,8 @@ HANDLE WINAPI Mine_CreateFileW(LPCWSTR p1, DWORD p2, DWORD p3, LPSECURITY_ATTRIB
         hFile = Real_CreateFileW(p1, p2, p3, p4, p5, p6, p7);
     }
 
+   // MessageBoxW(0, p1, L"W", 0);
+
     return hFile;
 }
 
@@ -1452,6 +1458,33 @@ BOOL WINAPI Mine_LockWindowUpdate(HWND hWndLock)
     }
 }
 
+BOOL (WINAPI* Real_ReadFile)(HANDLE, LPVOID, DWORD, LPDWORD, LPOVERLAPPED) = ReadFile;
+BOOL WINAPI Mine_ReadFile(HANDLE hFile, LPVOID b, DWORD c, LPDWORD d, LPOVERLAPPED e)
+{
+    int dwPtrOffset = 0;
+
+    if (GlobalEncodeInst != nullptr)    
+    {
+        LARGE_INTEGER liDistanceToMove;
+        LARGE_INTEGER liNewFilePointer;
+        liDistanceToMove.QuadPart = 0;  // 相对于当前位置移动0字节
+
+        if (SetFilePointerEx(hFile, liDistanceToMove, &liNewFilePointer, FILE_CURRENT)) {
+            dwPtrOffset = liNewFilePointer.QuadPart;
+        }
+    }
+
+    auto ret = Real_ReadFile(hFile, b, c, d, e);
+
+    if (GlobalEncodeInst != nullptr)
+    {
+        GlobalEncodeInst->DoRevise(hFile, dwPtrOffset, b, c);
+    }    
+
+    return ret;
+}
+
+
 BOOL CMPlayerCApp::InitInstance()
 {
     // Remove the working directory from the search path to work around the DLL preloading vulnerability
@@ -1489,6 +1522,8 @@ BOOL CMPlayerCApp::InitInstance()
 
     bHookingSuccessful &= !!Mhook_SetHookEx(&Real_CreateFileW, Mine_CreateFileW);
     bHookingSuccessful &= !!Mhook_SetHookEx(&Real_DeviceIoControl, Mine_DeviceIoControl);
+
+    Mhook_SetHookEx(&Real_ReadFile, Mine_ReadFile);
 
     bHookingSuccessful &= MH_EnableHook(MH_ALL_HOOKS) == MH_OK;
 

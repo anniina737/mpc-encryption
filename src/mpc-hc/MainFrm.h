@@ -726,6 +726,7 @@ public:
 
     afx_msg void OnFileOpenQuick();
     afx_msg void OnFileOpenmedia();
+    afx_msg void OnFileEncryptmedia();
     afx_msg void OnUpdateFileOpen(CCmdUI* pCmdUI);
     afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
     afx_msg void OnFileOpendvd();

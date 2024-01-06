@@ -468,6 +468,10 @@
     <ClCompile Include="ImageGrayer.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="CKeyDecode.cpp">
+      <Filter>Modal Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="CKeyEncode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSettings.h">
@@ -875,6 +879,11 @@
     <ClInclude Include="ImageGrayer.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="D:\media_encrypt\media_encrypt\media_encrypt.h" />
+    <ClInclude Include="CKeyDecode.h">
+      <Filter>Modal Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="CKeyEncode.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\ani.avi">

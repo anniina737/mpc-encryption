@@ -39,6 +39,7 @@
     <ProjectGuid>{8CE7E5D0-C821-47AC-A247-28EC95B34670}</ProjectGuid>
     <RootNamespace>mpc-hc</RootNamespace>
     <Keyword>MFCProj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="..\platform.props" />
@@ -75,6 +76,10 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Lite|Win32'">$(SolutionDir)bin15\mpc-hc_x86 Lite\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)bin15\mpc-hc_x64\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Lite|x64'">$(SolutionDir)bin15\mpc-hc_x64 Lite\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>D:\Windows Kits\10\Include\10.0.17763.0\um;D:\Windows Kits\10\Include\10.0.17763.0\shared;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\media_encrypt\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ResourceCompile>
@@ -128,7 +133,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="!$(Configuration.Contains('Lite'))">
     <Link>
-      <AdditionalDependencies>RARFileSource.res;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RARFileSource.res;media_encrypt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>..\thirdparty\ZenLib\library\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -140,6 +145,8 @@
     <ClCompile Include="AuthDlg.cpp" />
     <ClCompile Include="BaseGraph.cpp" />
     <ClCompile Include="ChildView.cpp" />
+    <ClCompile Include="CKeyDecode.cpp" />
+    <ClCompile Include="CKeyEncode.cpp" />
     <ClCompile Include="CmdLineHelpDlg.cpp" />
     <ClCompile Include="ColorButton.cpp" />
     <ClCompile Include="ComPropertyPage.cpp" />
@@ -279,6 +286,8 @@
     <ClInclude Include="AuthDlg.h" />
     <ClInclude Include="BaseGraph.h" />
     <ClInclude Include="ChildView.h" />
+    <ClInclude Include="CKeyDecode.h" />
+    <ClInclude Include="CKeyEncode.h" />
     <ClInclude Include="CmdLineHelpDlg.h" />
     <ClInclude Include="ColorButton.h" />
     <ClInclude Include="ComPropertyPage.h" />
@@ -286,6 +295,7 @@
     <ClInclude Include="CoverArt.h" />
     <ClInclude Include="CrashReporter.h" />
     <ClInclude Include="CShockwaveFlash.h" />
+    <ClInclude Include="D:\media_encrypt\media_encrypt\media_encrypt.h" />
     <ClInclude Include="DebugShadersDlg.h" />
     <ClInclude Include="DeinterlacerFilter.h" />
     <ClInclude Include="DpiHelper.h" />

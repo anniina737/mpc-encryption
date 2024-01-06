@@ -46,6 +46,8 @@
 #include "OpenDirHelper.h"
 #include "OpenDlg.h"
 #include "TunerScanDlg.h"
+#include "CKeyDecode.h"
+#include "CKeyEncode.h"
 
 #include "ComPropertySheet.h"
 #include "PPageAccelTbl.h"
@@ -104,6 +106,8 @@
 
 #include <initguid.h>
 #include <qnetwork.h>
+
+#include "D:\media_encrypt\media_encrypt\media_encrypt.h"
 
 // IID_IAMLine21Decoder
 DECLARE_INTERFACE_IID_(IAMLine21Decoder_2, IAMLine21Decoder, "6E8D4A21-310C-11d0-B79A-00AA003767A7") {};
@@ -235,6 +239,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_UPDATE_COMMAND_UI(ID_FILE_OPENMEDIA, OnUpdateFileOpen)
     ON_COMMAND(ID_FILE_OPENMEDIA, OnFileOpenmedia)
     ON_UPDATE_COMMAND_UI(ID_FILE_OPENMEDIA, OnUpdateFileOpen)
+    ON_COMMAND(ID_ENCYRPT_ENCRYPTMEDIAFILE, OnFileEncryptmedia)
+    // ON_COMMAND(ID_FILE_EncryptMedia, OnFileOpenmedia)
     ON_WM_COPYDATA()
     ON_COMMAND(ID_FILE_OPENDVDBD, OnFileOpendvd)
     ON_UPDATE_COMMAND_UI(ID_FILE_OPENDVDBD, OnUpdateFileOpen)
@@ -3803,6 +3809,19 @@ void CMainFrame::OnFileOpenQuick()
     m_wndPlaylistBar.Open(fns, fMultipleFiles);
 
     OpenCurPlaylistItem();
+}
+
+void CMainFrame::OnFileEncryptmedia()
+{
+    static CKeyEncode dlg;
+
+    dlg.DoModal();
+
+    /*
+    if (dlg.DoModal() != IDOK || dlg.GetFileNames().IsEmpty()) {
+        return;
+    }
+    */
 }
 
 void CMainFrame::OnFileOpenmedia()
@@ -10461,8 +10480,7 @@ void CMainFrame::OpenCreateGraphObject(OpenMediaData* pOMD)
     if (FAILED(m_pME->SetNotifyWindow((OAHWND)m_hWnd, WM_GRAPHNOTIFY, 0))) {
         throw (UINT)IDS_GRAPH_TARGET_WND_ERROR;
     }
-
-    m_pProv = (IUnknown*)DEBUG_NEW CKeyProvider();
+      m_pProv = (IUnknown*)DEBUG_NEW CKeyProvider();
 
     if (CComQIPtr<IObjectWithSite> pObjectWithSite = m_pGB) {
         pObjectWithSite->SetSite(m_pProv);
@@ -10501,8 +10519,46 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
             break;
         }
 
-        HRESULT hr = m_pGB->RenderFile(CStringW(fn), nullptr);
+        //
+        Cmedia_encrypt myInstance;
+        GlobalEncodeInst = &myInstance;
+        static CKeyDecode kd_dlg;
+        // get default key if it exists
+        auto tt = kd_dlg.GetKey();
+        int result;
+        if (!tt.IsEmpty()) {
+            const wchar_t* myWideChar = tt.GetBuffer();
+            int bufferSize = WideCharToMultiByte(CP_UTF8, 0, myWideChar, -1, NULL, 0, NULL, NULL);
+            char* myChar = new char[bufferSize];
+            WideCharToMultiByte(CP_UTF8, 0, myWideChar, -1, myChar, bufferSize, NULL, NULL);
 
+            result = GlobalEncodeInst->Init(CStringW(fn), myChar);
+            tt.ReleaseBuffer();
+            delete[] myChar;
+        }
+        else {
+            result = GlobalEncodeInst->Init(CStringW(fn), nullptr);
+        }
+
+        if (result == 2) {            
+            if (IDOK == kd_dlg.DoModal()) {
+                auto tt = kd_dlg.GetKey();
+                if (!tt.IsEmpty()) {
+                    const wchar_t* myWideChar = tt.GetBuffer();
+                    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, myWideChar, -1, NULL, 0, NULL, NULL);
+
+                    char* myChar = new char[bufferSize];
+
+                    WideCharToMultiByte(CP_UTF8, 0, myWideChar, -1, myChar, bufferSize, NULL, NULL);
+                    
+                    GlobalEncodeInst->Init(CStringW(fn), myChar);
+                    tt.ReleaseBuffer();
+                    delete[] myChar;
+                }                
+            }
+        }
+
+        HRESULT hr = m_pGB->RenderFile(CStringW(fn), nullptr);
         if (FAILED(hr)) {
             if (bMainFile) {
                 if (s.fReportFailedPins) {
