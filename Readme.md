@@ -1,4 +1,4 @@
-# Media Player Classic - Home Cinema
+# Media Player Classic - Encryption
 
 [![GitHub Tag](https://img.shields.io/github/tag/mpc-hc/mpc-hc.svg?label=version)](https://github.com/mpc-hc/mpc-hc)
 [![Coverity Scan Build Status](https://img.shields.io/coverity/scan/259.svg)](https://scan.coverity.com/projects/259)
@@ -18,6 +18,11 @@ See [CONTRIBUTING.md](/CONTRIBUTING.md) for more info.
 
 *We care about keeping an open project open and free for contributions wherever they may come from.*
 
+## Encrypt Media Files
+The current version offers the capability to add/modify passwords for media files. Open the menu and select "Encrypt." Choose one or more target files, set the current password (leave this field blank if the target media file is not encrypted), set a new password, and then press "OK." The software will perform the operation to add/modify passwords for the selected media files.
+
+## Decrypt Media Files
+The current version includes a feature to play encrypted media files. When an encrypted media file is loaded, a dialog box will prompt the user to enter a password. The media file will only play if the user enters the correct password. Additionally, the entered password will be saved, allowing users to play consecutive media files with the same password without having to re-enter it.
 
 ## Main Features
 
