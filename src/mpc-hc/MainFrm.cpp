@@ -107,7 +107,8 @@
 #include <initguid.h>
 #include <qnetwork.h>
 
-#include "D:\media_encrypt\media_encrypt\media_encrypt.h"
+#include "media_encrypt.h"
+#include "cover_mp4.h"
 
 // IID_IAMLine21Decoder
 DECLARE_INTERFACE_IID_(IAMLine21Decoder_2, IAMLine21Decoder, "6E8D4A21-310C-11d0-B79A-00AA003767A7") {};
@@ -10550,8 +10551,16 @@ void CMainFrame::OpenFile(OpenFileData* pOFD)
                     char* myChar = new char[bufferSize];
 
                     WideCharToMultiByte(CP_UTF8, 0, myWideChar, -1, myChar, bufferSize, NULL, NULL);
-                    
-                    GlobalEncodeInst->Init(CStringW(fn), myChar);
+
+                    auto r = GlobalEncodeInst->Init(CStringW(fn), myChar);
+                    /*
+                    if (1 == r) {
+                        AfxMessageBox(L"Right Password");
+                    }
+                    */
+                    if (2 == r) {
+                        AfxMessageBox(L"Illegal Password");
+                    }
                     tt.ReleaseBuffer();
                     delete[] myChar;
                 }                
