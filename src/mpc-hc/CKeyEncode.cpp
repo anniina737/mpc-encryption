@@ -4,7 +4,8 @@
 #include "mplayerc.h"
 #include "PathUtils.h"
 #include "OpenFileDlg.h"
-#include "D:\media_encrypt\media_encrypt\media_encrypt.h"
+#include "media_encrypt.h"
+#include "cover_mp4.h"
 
 //IMPLEMENT_DYNAMIC(COpenDlg, CResizableDialog)
 CKeyEncode::CKeyEncode(CWnd* pParent /*=nullptr*/)
@@ -77,6 +78,8 @@ void CKeyEncode::OnOk()
     //
     Cmedia_encrypt myInstance;
     GlobalEncodeInst = &myInstance;
+    GlobalEncodeInst->setCoverInfo(CoverMp4Data, sizeof(CoverMp4Data));
+    GlobalEncodeInst->setMaxCoverSize(MaxCoverMp4);
 
     const wchar_t* myWideChar = current_key.GetBuffer();
     int bufferSize = WideCharToMultiByte(CP_UTF8, 0, myWideChar, -1, NULL, 0, NULL, NULL);
